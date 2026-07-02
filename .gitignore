@@ -1,0 +1,12 @@
+# Ignore the data folder entirely
+data/
+
+# Ignore any hidden temporary SolidWorks files
+~$*
+
+# Ignore any massive CSV data logs
+*.csv
+
+# Ignore raw Excel and Word documents
+*.xlsx
+*.docx
