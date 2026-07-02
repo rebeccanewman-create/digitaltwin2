@@ -136,42 +136,39 @@
         scene.add(dirLight2);
 
         // 4. Load the CAD Model
-        const loader = new GLTFLoader();
-        
-        loader.load(
+const loader = new GLTFLoader();
+
+loader.load(
     'SS-J3.glb', 
     function (gltf) {
         const model = gltf.scene;
         
-        // Force-calculate the exact scale of your CAD part
+        // Center the model automatically in the view
         const box = new THREE.Box3().setFromObject(model);
-        const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
-        
-        // Center the geometry's pivot point
         model.position.sub(center);
         
-        // If the model is huge (in mm), scale it down. If it's tiny, scale it up!
-        const maxDim = Math.max(size.x, size.y, size.z);
-        if (maxDim > 0) {
-            const scaleFactor = 5 / maxDim; // Resizes it to a standard 5-meter window viewport
-            model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+        scene.add(model);
+        
+        // ✨ FORCE HIDE THE LOADING TEXT RIGHT HERE
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+            loadingElement.style.setProperty('display', 'none', 'important');
         }
         
-        scene.add(model);
-        document.getElementById('loading').style.display = 'none';
-        console.log("Model successfully auto-scaled and centered!");
+        console.log("Model loaded successfully!");
     },
-            // Optional progress function
-            function (xhr) {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
-            // Error handling
-            function (error) {
-                console.error("An error happened loading the model:", error);
-                document.getElementById('loading').innerText = "Failed to load 3D model.";
-            }
-        );
+    // Progress function
+    function (xhr) {
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    // Error handling
+    function (error) {
+        console.error("An error happened loading the model:", error);
+        // Change text if it actually fails
+        document.getElementById('loading').innerText = "Failed to load 3D model.";
+    }
+);
 
         // 5. Handle Window Resizing
         window.addEventListener('resize', onWindowResize, false);
