@@ -287,57 +287,61 @@
             if (e.key === 'Enter') sendMessage();
         }
 
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const messageText = input.value.trim();
-            if (!messageText) return;
+        async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const messageText = input.value.trim();
+    if (!messageText) return;
 
-            // 1. Append User Message Box
-            const history = document.getElementById('chat-history');
-            const userDiv = document.createElement('div');
-            userDiv.className = 'msg user-msg';
-            userDiv.innerText = messageText;
-            history.appendChild(userDiv);
-            input.value = '';
-            history.scrollTop = history.scrollHeight;
+    // 1. Show User Message
+    const history = document.getElementById('chat-history');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'msg user-msg';
+    userDiv.innerText = messageText;
+    history.appendChild(userDiv);
+    input.value = '';
+    history.scrollTop = history.scrollHeight;
 
-            // 2. Scrape Current Live Telemetry Metrics directly from your view panel
-            const liveTemp = document.getElementById('temp-val').innerText;
-            const liveLayer = document.getElementById('layer-val').innerText;
-            const liveSpeed = document.getElementById('speed-val').innerText;
-            const liveStatus = document.getElementById('status-val').innerText;
+    // 2. Scrape Telemetry Elements
+    const liveTemp = document.getElementById('temp-val').innerText;
+    const liveLayer = document.getElementById('layer-val').innerText;
+    const liveSpeed = document.getElementById('speed-val').innerText;
+    const liveStatus = document.getElementById('status-val').innerText;
 
-            // 3. Append Pending AI Message Box Placeholder
-            const aiDiv = document.createElement('div');
-            aiDiv.className = 'msg ai-msg';
-            aiDiv.innerText = "Analyzing system parameters...";
-            history.appendChild(aiDiv);
-            history.scrollTop = history.scrollHeight;
+    // 3. Add AI Thinking Box
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'msg ai-msg';
+    aiDiv.innerText = "Thinking...";
+    history.appendChild(aiDiv);
+    history.scrollTop = history.scrollHeight;
 
-            // 4. Local Core Rules Matrix (Bypasses unstable network calls instantly)
-            setTimeout(() => {
-                const query = messageText.toLowerCase();
-                let evaluationAnswer = "";
-
-                if (query.includes('temp') || query.includes('hot') || query.includes('heat')) {
-                    evaluationAnswer = `The active process temperature is fluctuating within safe margins at ${liveTemp}. Laser thermal parameters indicate nominal structural pooling conditions.`;
-                } else if (query.includes('layer') || query.includes('height') || query.includes('z-axis')) {
-                    evaluationAnswer = `The digital twin tracker shows the Z-axis height is sitting precisely at ${liveLayer}. Inter-layer adhesion validation metrics are optimal.`;
-                } else if (query.includes('speed') || query.includes('fast') || query.includes('feed')) {
-                    evaluationAnswer = `The deposition print head feedrate speed is pinned at ${liveSpeed}. Inertia metrics indicate zero micro-shuttering deviations.`;
-                } else if (query.includes('status') || query.includes('safe') || query.includes('working')) {
-                    evaluationAnswer = `The additive manufacturing system status reads ${liveStatus}. All NIST sensor arrays register no mechanical discrepancies.`;
-                } else if (query.includes('cad') || query.includes('model') || query.includes('part')) {
-                    evaluationAnswer = `This digital twin viewport renders assembly 'SS-J3'. It serves as a geometric standard calibration block reference.`;
-                } else {
-                    evaluationAnswer = `Under current operating parameters (Temp: ${liveTemp}, Layer: ${liveLayer}), the twin registry is stable. Please specify a telemetry parameter to review.`;
+    try {
+        // 4. Hit our secure internal backend route
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: messageText,
+                telemetry: {
+                    temp: liveTemp,
+                    layer: liveLayer,
+                    speed: liveSpeed,
+                    status: liveStatus
                 }
+            })
+        });
 
-                // Render response back to the widget instantly
-                aiDiv.innerText = evaluationAnswer;
-                history.scrollTop = history.scrollHeight;
-            }, 450);
+        const data = await response.json();
+        if (data.reply) {
+            aiDiv.innerText = data.reply;
+        } else {
+            aiDiv.innerText = `Error: ${data.error}`;
         }
+    } catch (error) {
+        console.error(error);
+        aiDiv.innerText = "Connection lost to server gateway.";
+    }
+    history.scrollTop = history.scrollHeight;
+}
     </script>
 </body>
 </html>
