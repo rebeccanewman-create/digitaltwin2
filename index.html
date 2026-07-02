@@ -188,6 +188,36 @@
             <span class="label">System Status:</span>
             <span class="value status-good" id="status-val">OPERATIONAL</span>
         </div>
+        <div id="dashboard">
+        <h2>NIST Digital Twin Live Telemetry</h2>
+        <hr>
+        <div class="metric">
+            <span class="label">Extruder Temperature:</span>
+            <span class="value" id="temp-val">215°C</span>
+        </div>
+        <div class="metric">
+            <span class="label">Current Layer Height:</span>
+            <span class="value" id="layer-val">0.200 mm</span>
+        </div>
+        <div class="metric">
+            <span class="label">Print Speed:</span>
+            <span class="value" id="speed-val">60 mm/s</span>
+        </div>
+        <div class="metric">
+            <span class="label">System Status:</span>
+            <span class="value status-good" id="status-val">OPERATIONAL</span>
+        </div>
+
+        <hr>
+        <h2>Ask Digital Twin AI</h2>
+        <div id="chat-history" style="height: 150px; overflow-y: auto; margin-bottom: 8px; font-size: 12px; display: flex; flex-direction: column; gap: 5px;">
+            <div class="msg ai-msg" style="background: #222; padding: 5px 8px; border-radius: 4px;">Hello! Ask me anything about the SS-J3 part or telemetry.</div>
+        </div>
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="chat-input" placeholder="Type a question..." onkeypress="handleKeyPress(event)" style="flex: 1; background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px; font-size: 12px; outline: none;">
+            <button onclick="sendMessage()" style="background: #00adb5; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">Send</button>
+        </div>
+    </div>
     </div>
 
     <div id="chat-widget">
